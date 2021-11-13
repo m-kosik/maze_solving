@@ -18,7 +18,6 @@ def check_path(maze):
         if solver.current_position == (width-1,length-1):
             return True
 
-
 class Solver():
     def __init__(self, maze, start_position = (0,0), end_position = None, direction = 'S'):
         self.maze = maze
@@ -27,18 +26,19 @@ class Solver():
         if not end_position:
             self.end_position = (self.maze.shape[0]-1, self.maze.shape[1]-1)
         self.is_game_stuck = False
-        self.available_start_directions = ['S','E']
+        self.available_start_directions = ['W','S']
 
     def make_one_move(self):
         temp_checked = []
-        start_checking_in_direction = {'W':'E', 'N':'S', 'E':'W', 'S':'N'}
-        self.direction = start_checking_in_direction[self.direction]
+        if self.current_position == (0,0):
+            self.direction = self.available_start_directions[0]
+            self.available_start_directions.remove(self.direction)
+        else:
+            start_checking_in_direction = {'W':'E', 'N':'S', 'E':'W', 'S':'N'}
+            self.direction = start_checking_in_direction[self.direction]
         
         while True:
             self.set_new_direction()
-            if self.current_position == (0,0) and self.direction in self.available_start_directions:
-                self.available_start_directions.remove(self.direction)
-
             new_position = self.find_new_position()
             if self.is_move_valid(new_position) and not self.maze[new_position]:
                 self.current_position = new_position
@@ -70,6 +70,10 @@ class Solver():
             return False
         else:
             return True
+    
+    def set_new_direction(self):
+        directions_clockwise = {'W':'S', 'N':'W', 'E':'N', 'S':'E'}
+        self.direction = directions_clockwise[self.direction]
 
     def show_maze(self):
         if self.direction == 'N':
@@ -85,10 +89,8 @@ class Solver():
         plt.scatter(self.current_position[1],self.current_position[0],marker=marker,c='red',s=100)
         plt.show()
     
-    def set_new_direction(self):
-        directions_clockwise = {'W':'S', 'N':'W', 'E':'N', 'S':'E'}
-        directions_counterclockwise = {'W':'N', 'N':'E', 'E':'S', 'S':'W'}
-        self.direction = directions_clockwise[self.direction]
+
+
 
 # def string_to_array(input_str):
 #     maze_width = input_str.find('\n')
